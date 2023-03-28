@@ -13,15 +13,17 @@ def view(board):
 
 def fitness(board):
     attacks = 0
-    for i in range(len(board) - 1):
-        for j in range(i + 1, len(board)):
+    for i in range(8):
+        for j in range(i + 1, 8):
             if board[i] == board[j]:
                 attacks += 1
-    for i in range(len(board) - 1):
-        for j in range(i + 1, len(board)):
-            if abs(board[j] - board[i]) == abs(j - i):
+            if board[i] + i == board[j] + j:
                 attacks += 1
-    return 28 - attacks
+            if board[i] - i == board[j] - j:
+                attacks += 1
+
+    fitness_value = 28 - attacks
+    return fitness_value
 
 def crossover(board1, board2, crossover_rate):
     if random.random() < crossover_rate:
@@ -41,9 +43,9 @@ def mutate(board, mutation_rate):
 
 # Parâmetros do algoritmo genético
 population_size = 100
-crossover_rate = 0.6
+crossover_rate = 0.8
 mutation_rate = 0.1
-generations = 75
+generations = 200
 
 population = []
 for i in range(population_size):
