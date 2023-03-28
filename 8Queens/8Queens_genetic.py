@@ -41,7 +41,7 @@ def mutate(board, mutation_rate):
 
 # Parâmetros do algoritmo genético
 population_size = 100
-crossover_rate = 0.8
+crossover_rate = 0.6
 mutation_rate = 0.1
 generations = 75
 
@@ -55,7 +55,6 @@ for generation in range(generations):
     fitness_scores = [fitness(board) for board in population]
     
     max_fitness.append(max(fitness_scores))
-    print("FitnessScore:", fitness_scores)
     parents = []
     for i in range(population_size):
         p1 = random.randint(0, population_size-1)
