@@ -36,11 +36,29 @@ def mutate(board, mutation_rate): # Mutação variável
             boardCopy[i] = random.randint(0, 7)
     return boardCopy
 
+def diversity(population):
+    diversity = 0
+    for i in range(len(population)):
+        for j in range(i + 1, len(population)):
+            if population[i] != population[j]:
+                diversity += 1
+    return diversity
+
+
+def calibrate_rates(population_diversity, mutation_rate, crossover_rate):
+
+    if population_diversity > population_size * 0.7:
+        crossover_rate = crossover_rate + (crossover_rate * 0.1)
+        mutation_rate = mutation_rate - (mutation_rate * 0.1)
+    else:
+        crossover_rate = crossover_rate - (crossover_rate * 0.1)
+        mutation_rate = mutation_rate + (mutation_rate * 0.1)
+
+    return crossover_rate, mutation_rate
+
 population_size = 100
-crossover_rate_min = 0.6
-crossover_rate_max = 0.9
-mutation_rate_min = 0.05
-mutation_rate_max = 0.2
+crossover_rate = 0.6
+mutation_rate = 0.1
 generations = 75
 
 # Inicialização da população
@@ -71,9 +89,10 @@ for generation in range(generations):
     for i in range(int((population_size)/2)):
         p1 = i * 2
         p2 = i * 2 + 1
-        
-        crossover_rate = random.uniform(crossover_rate_min, crossover_rate_max)
-        mutation_rate = random.uniform(mutation_rate_min, mutation_rate_max)
+
+        population_diversity = diversity(population)
+
+        crossover_rate, mutation_rate = calibrate_rates(population_diversity, mutation_rate, crossover_rate)
         
         offspring1, offspring2 = crossover(parents[p1], parents[p2], crossover_rate)
         offspring1 = mutate(offspring1, mutation_rate)

@@ -39,11 +39,29 @@ def mutate(board, mutation_rate): #Mutação Variada
         boardCopy[index] = new_value
     return boardCopy
 
+def diversity(population):
+    diversity = 0
+    for i in range(len(population)):
+        for j in range(i + 1, len(population)):
+            if population[i] != population[j]:
+                diversity += 1
+    return diversity
+
+
+def calibrate_rates(population_diversity, mutation_rate, crossover_rate):
+
+    if population_diversity > population_size * 0.7:
+        crossover_rate = crossover_rate + (crossover_rate * 0.1)
+        mutation_rate = mutation_rate - (mutation_rate * 0.1)
+    else:
+        crossover_rate = crossover_rate - (crossover_rate * 0.1)
+        mutation_rate = mutation_rate + (mutation_rate * 0.1)
+
+    return crossover_rate, mutation_rate
+
 population_size = 100
-crossover_rate_min = 0.6
-crossover_rate_max = 0.9
-mutation_rate_min = 0.05
-mutation_rate_max = 0.2
+crossover_rate = 0.6
+mutation_rate = 0.1
 generations = 75
 
 population = []
@@ -52,6 +70,7 @@ for i in range(population_size):
     population.append(board)
 
 max_fitness = []
+
 for generation in range(generations):
     fitness_scores = [fitness(board) for board in population]
     max_fitness.append(max(fitness_scores))
@@ -70,21 +89,23 @@ for generation in range(generations):
         p1 = i * 2
         p2 = i * 2 + 1
         
-        crossover_rate = random.uniform(crossover_rate_min, crossover_rate_max)
-        mutation_rate = random.uniform(mutation_rate_min, mutation_rate_max)
-        
+        population_diversity = diversity(population)
+
+        crossover_rate, mutation_rate = calibrate_rates(population_diversity, mutation_rate, crossover_rate)
+
         offspring1, offspring2 = crossover(parents[p1], parents[p2], crossover_rate)
         offspring1 = mutate(offspring1, mutation_rate)
         offspring2 = mutate(offspring2, mutation_rate)
         new_population.append(offspring1)
         new_population.append(offspring2)
+
     population = new_population
 
 best_board = max(population, key=fitness)
 print('Melhor solução:')
 view(best_board)
 
-plt.plot(range(generations), max_fitness)
+plt.plot(range(generations), max_fitness, color='red')
 plt.title("Maior fitness por geração com taxas variadas")
 plt.ylabel("Fitness")
 plt.xlabel("Geração")

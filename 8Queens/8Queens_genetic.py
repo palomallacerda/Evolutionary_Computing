@@ -43,7 +43,7 @@ def mutate(board, mutation_rate):
 population_size = 100
 crossover_rate = 0.8
 mutation_rate = 0.1
-generations = 1000
+generations = 75
 
 population = []
 for i in range(population_size):
@@ -53,8 +53,9 @@ for i in range(population_size):
 max_fitness = []
 for generation in range(generations):
     fitness_scores = [fitness(board) for board in population]
-    max_fitness.append(max(fitness_scores))
     
+    max_fitness.append(max(fitness_scores))
+    print("FitnessScore:", fitness_scores)
     parents = []
     for i in range(population_size):
         p1 = random.randint(0, population_size-1)
@@ -68,6 +69,7 @@ for generation in range(generations):
     for i in range(int(population_size/2)):
         p1 = i * 2
         p2 = i * 2 + 1
+
         offspring1, offspring2 = crossover(parents[p1], parents[p2], crossover_rate)
         offspring1 = mutate(offspring1, mutation_rate)
         offspring2 = mutate(offspring2, mutation_rate)
@@ -76,6 +78,7 @@ for generation in range(generations):
     population = new_population
 
 best_board = max(population, key=fitness)
+
 print('Melhor solução:')
 view(best_board)
 
